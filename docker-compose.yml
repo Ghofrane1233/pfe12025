@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: boardhub
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api_gateway:
+    build: ./backend/api_gateway
+    container_name: api_gateway
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - AUTH_SERVICE_URL=http://auth:5000
+      - CLIENT_SERVICE_URL=http://client:5001
+      - MODEL_SERVICE_URL=http://model:5002
+      - PARTS_SERVICE_URL=http://parts:5003
+      - DOCUMENT_SERVICE_URL=http://document:5004
+      - FIRMWARE_SERVICE_URL=http://firmware:5005
+    depends_on:
+      - auth
+      - client
+      - model
+      - parts
+      - document
+      - firmware
+
+  auth:
+    build: ./backend/auth
+    container_name: auth
+    restart: always
+    environment:
+      - PORT=5000
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+
+  client:
+    build: ./backend/client
+    container_name: client
+    restart: always
+    environment:
+      - PORT=5001
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mysql
+
+  model:
+    build: ./backend/model
+    container_name: model
+    restart: always
+    environment:
+      - PORT=5002
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mysql
+
+  parts:
+    build: ./backend/parts
+    container_name: parts
+    restart: always
+    environment:
+      - PORT=5003
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5003:5003"
+    depends_on:
+      - mysql
+
+  document:
+    build: ./backend/document
+    container_name: document
+    restart: always
+    environment:
+      - PORT=5004
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5004:5004"
+    depends_on:
+      - mysql
+
+  firmware:
+    build: ./backend/firmware
+    container_name: firmware
+    restart: always
+    environment:
+      - PORT=5005
+      - JWT_SECRET=123456789
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=boardhub
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - "5005:5005"
+    depends_on:
+      - mysql
+
+  front:
+    build: ./front
+    container_name: front
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000
+      - PORT=3000
+    stdin_open: true
+    tty: true
+    depends_on:
+      - api_gateway
+
+volumes:
+  mysql_data:

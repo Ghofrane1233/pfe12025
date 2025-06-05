@@ -1,0 +1,51 @@
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+bower_components/
+
+# Build outputs
+dist/
+build/
+out/
+tmp/
+temp/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env
+.env.*
+
+# Editor and system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Python-related (if any)
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Docker
+docker-compose.override.yml
+
+# Kubernetes
+k8s/*-secret.yaml
+k8s/*.bak
+k8s/*.tmp
+
+# MySQL
+mysql/data/
