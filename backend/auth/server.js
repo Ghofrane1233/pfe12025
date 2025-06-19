@@ -3,7 +3,18 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const client = require('prom-client');
 
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
+
+// Exemple de métriques personnalisées
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Nombre total de requêtes HTTP',
+  labelNames: ['method', 'route', 'status'],
+});
+register.registerMetric(httpRequestCounter);
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -26,6 +37,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 // Fonction pour interroger la base de données
 async function interrogerDB(sql, params) {
   let connexion;
@@ -37,7 +62,10 @@ async function interrogerDB(sql, params) {
     if (connexion) connexion.release();
   }
 }
-
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 // Route de connexion
 app.post('/login', async (req, res) => {
   try {
@@ -134,3 +162,5 @@ app.listen(PORT, async () => {
 });
 
 module.exports = app; // Or whatever your Express instance is named
+
+

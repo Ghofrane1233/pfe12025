@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: msparts
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: msparts
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: msparts
     spec:
       containers:
-      - name: node-microservice
-        image: ghofrab
-        imagePullPolicy: Never
+      - name: msparts
+        image: ghofrane694/msparts:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 5003

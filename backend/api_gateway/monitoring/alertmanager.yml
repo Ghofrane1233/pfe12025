@@ -1,0 +1,24 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1m
+  receiver: 'lab-alert-manager'
+
+receivers:
+  - name: 'lab-alert-manager'
+    slack_configs:
+      - send_resolved: true
+        channel: '#tous-monitoring'
+        api_url: 'https://hooks.slack.com/services/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'
+    email_configs:
+      - to: 'sahbighofrane5@gmail.com'
+        from: 'sahbighofrane5@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'sahbighofrane5@gmail.com'
+        auth_identity: 'gmail'
+        auth_password: 'nbsc nwcn vhvw zsgc'
+        send_resolved: true

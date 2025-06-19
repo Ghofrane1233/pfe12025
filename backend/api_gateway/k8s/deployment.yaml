@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: apigateway
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: apigateway
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: apigateway
     spec:
       containers:
-      - name: node-microservice
-        image: node-microservice
-        imagePullPolicy: Never
+      - name: apigateway
+        image: ghofrane694/apigateway:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 4000

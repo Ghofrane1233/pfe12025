@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: msdocument
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: msdocument
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: msdocument
     spec:
       containers:
-      - name: node-microservice
-        image: node-microservice
-        imagePullPolicy: Never
+      - name: msdocument
+        image: ghofrane694/msdocument
         ports:
-        - containerPort: 3000
+        - containerPort: 5004

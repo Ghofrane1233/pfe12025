@@ -4,15 +4,40 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const client = require('prom-client');
 
 const app = express();
 const PORT = process.env.PORT ;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
+
+// Exemple de métriques personnalisées
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Nombre total de requêtes HTTP',
+  labelNames: ['method', 'route', 'status'],
+});
+register.registerMetric(httpRequestCounter);
 // Middleware global
 app.use(cors());
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
 
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 // Configuration de la base de données
 const dbConfig = {
   host: process.env.DB_HOST ,

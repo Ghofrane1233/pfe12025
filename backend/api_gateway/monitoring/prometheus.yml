@@ -1,0 +1,48 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'auth'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5000']
+
+  - job_name: 'client'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5001']
+
+  - job_name: 'document'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5004']
+
+  - job_name: 'firmware'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5005']
+
+  - job_name: 'model'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5002']
+
+  - job_name: 'parts'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['192.168.143.1:5003']
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.143.1:9090']
+
+rule_files:
+  - 'rules.yml'
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ['192.168.143.1:9093']

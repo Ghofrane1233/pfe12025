@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: node-microservice
+  name: msdocument
 spec:
   selector:
-    app: node-microservice
+    app: msdocument
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: 5004
   type: LoadBalancer
+  
+  

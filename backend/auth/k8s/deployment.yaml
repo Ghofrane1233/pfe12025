@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: msauth
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: msauth
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: msauth
     spec:
       containers:
-      - name: node-microservice
-        image: node-microservice
-        imagePullPolicy: Never
+      - name: msauth
+        image: ghofrane694/msauth:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 5000

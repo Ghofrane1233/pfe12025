@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: msclient
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: msclient
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: msclient
     spec:
       containers:
-      - name: node-microservice
-        image: node-microservice
-        imagePullPolicy: Never
+      - name: msclient
+        image: ghofrane694/msclient:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 5001

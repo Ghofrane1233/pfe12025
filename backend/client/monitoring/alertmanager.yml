@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  labels:
+    name: alertmanager-config
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 1m
+
+    route:
+      receiver: 'lab-alert-manager'
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1m
+
+    receivers:
+      - name: 'lab-alert-manager'
+        email_configs:
+          - to: 'sahbighofrane5@gmail.com'
+            from: 'sahbighofrane5@gmail.com'
+            smarthost: 'smtp.gmail.com:587'
+            auth_username: 'sahbighofrane5@gmail.com'
+            auth_identity: 'sahbighofrane5@gmail.com'
+            auth_password: 'nbsc nwcn vhvw zsgc'
+            send_resolved: true
+        slack_configs:
+          - send_resolved: true
+            channel: '#monitoring'
+            api_url: 'https://hooks.slack.com/services/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'

@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-microservice
+  name: msfirmeware
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-microservice
+      app: msfirmeware
   template:
     metadata:
       labels:
-        app: node-microservice
+        app: msfirmeware
     spec:
       containers:
-      - name: node-microservice
-        image: node-microservice
-        imagePullPolicy: Never
+      - name: msfirmeware
+        image: ghofrane694/msfirmeware:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 5005

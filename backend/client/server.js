@@ -3,14 +3,40 @@ const express = require('express');
 const mysql = require('mysql2/promise'); // version async/await
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-
+const client = require('prom-client');
 const app = express();
 const PORT = process.env.PORT;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
+
+// Exemple de métriques personnalisées
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Nombre total de requêtes HTTP',
+  labelNames: ['method', 'route', 'status'],
+});
+register.registerMetric(httpRequestCounter);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 
 // Configuration de la base de données
 const dbConfig = {
@@ -26,22 +52,21 @@ const pool = mysql.createPool(dbConfig);
 // Middleware d'authentification JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  console.log("authHeader",authHeader)
   const token = authHeader?.split(' ')[1];
-  console.log("token",token)
 
   if (!token) {
     return res.status(401).json({ message: 'Token manquant' });
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    console.log("token, JWT_SECRET",token, JWT_SECRET)
 
     if (err) return res.status(403).json({ message: 'Token invalide ou expiré' });
     req.user = user;
     next();
   });
 }
+
+
 
 // ----------------------
 // Routes sécurisées clients

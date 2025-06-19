@@ -9,12 +9,13 @@ const mysql = require('mysql2/promise');
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
 const TEST_TOKEN = jwt.sign({ id: 1 }, JWT_SECRET);
 const TEST_PORT = 5006;
+
 let server;
 let dbConnection;
 
 beforeAll(async () => {
   server = app.listen(TEST_PORT);
-  
+
   // Connexion à la base de données
   dbConnection = await mysql.createConnection({
     host: process.env.DB_HOST,
@@ -23,30 +24,36 @@ beforeAll(async () => {
     database: process.env.DB_NAME
   });
 
-  // Création d'un part_model (sans colonne 'name')
+  // Création d’un part_model avec les champs requis
   try {
-    await dbConnection.execute('INSERT INTO parts_models (id) VALUES (1)');
+    await dbConnection.execute(`
+      INSERT INTO parts_models (id, reference, name) 
+      VALUES (?, ?, ?)`, 
+      [1, 'TEST-REF-001', 'Test Model']
+    );
   } catch (err) {
     if (!err.message.includes('Duplicate entry')) {
-      console.log('Erreur création part_model:', err.message);
+      console.log('❌ Erreur création part_model:', err.message);
     }
   }
 });
 
 afterAll(async () => {
-  // Nettoyage
-  await dbConnection.execute('DELETE FROM parts_models WHERE id = 1');
-  await dbConnection.execute('DELETE FROM part_model_firmware WHERE part_model_id = 1');
-  await dbConnection.end();
-  
-  await new Promise(resolve => server.close(resolve));
+  try {
+    await dbConnection.execute('DELETE FROM part_model_firmware WHERE part_model_id = 1');
+    await dbConnection.execute('DELETE FROM parts_models WHERE id = 1');
+    await dbConnection.end();
+    await new Promise(resolve => server.close(resolve));
+  } catch (err) {
+    console.error("❌ Erreur dans afterAll:", err);
+  }
 });
 
 describe('Tests API Firmware', () => {
   it('POST /Firmware devrait créer un firmware', async () => {
     const testData = {
       part_model_id: 1,
-      version: '1.0.0-test-' + Date.now(), // Version unique
+      version: '1.0.0-test-' + Date.now(),
       description: 'Test firmware',
       file_path: '/uploads/test.bin'
     };
@@ -56,10 +63,8 @@ describe('Tests API Firmware', () => {
       .set('Authorization', `Bearer ${TEST_TOKEN}`)
       .send(testData);
 
-    // Gestion spéciale si la contrainte échoue quand même
     if (res.statusCode === 500) {
-      console.warn('⚠️ Erreur de contrainte, vérifiez que parts_models.id=1 existe');
-      return;
+      console.warn('⚠️ Erreur de contrainte, vérifiez que parts_models.id=1 existe et que tous les champs sont fournis.');
     }
 
     expect(res.statusCode).toBe(201);
@@ -82,6 +87,7 @@ describe('Tests API Firmware', () => {
       .attach('file', filePath);
 
     expect(res.statusCode).toBe(200);
+
     fs.unlinkSync(filePath);
   });
 });

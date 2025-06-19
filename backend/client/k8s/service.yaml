@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: node-microservice
+  name: msclient
 spec:
   selector:
-    app: node-microservice
+    app: msclient
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: 5001
   type: LoadBalancer
+  
+  
