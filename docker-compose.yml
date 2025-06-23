@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: boardhub
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-
   api_gateway:
     build: ./backend/api_gateway
     container_name: api_gateway
@@ -42,15 +29,13 @@ services:
     environment:
       - PORT=5000
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5000:5000"
-    depends_on:
-      - mysql
 
   client:
     build: ./backend/client
@@ -59,15 +44,13 @@ services:
     environment:
       - PORT=5001
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5001:5001"
-    depends_on:
-      - mysql
 
   model:
     build: ./backend/model
@@ -76,15 +59,13 @@ services:
     environment:
       - PORT=5002
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5002:5002"
-    depends_on:
-      - mysql
 
   parts:
     build: ./backend/parts
@@ -93,15 +74,13 @@ services:
     environment:
       - PORT=5003
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5003:5003"
-    depends_on:
-      - mysql
 
   document:
     build: ./backend/document
@@ -110,15 +89,13 @@ services:
     environment:
       - PORT=5004
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5004:5004"
-    depends_on:
-      - mysql
 
   firmware:
     build: ./backend/firmware
@@ -127,15 +104,13 @@ services:
     environment:
       - PORT=5005
       - JWT_SECRET=123456789
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=boardhub.yosrsoft.com
+      - DB_USER=ghofrane
+      - DB_PASSWORD=gh2025
       - DB_NAME=boardhub
       - CORS_ORIGIN=http://localhost:3000
     ports:
       - "5005:5005"
-    depends_on:
-      - mysql
 
   front:
     build: ./front
@@ -150,6 +125,3 @@ services:
     tty: true
     depends_on:
       - api_gateway
-
-volumes:
-  mysql_data:

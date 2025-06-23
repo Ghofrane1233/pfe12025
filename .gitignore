@@ -48,4 +48,4 @@ k8s/*.bak
 k8s/*.tmp
 
 # MySQL
-mysql/data/
+mysql/data/&

@@ -175,6 +175,13 @@ app.get('/clients/count', authenticateToken, async (req, res) => {
   }
 });
 
+// ✅ Route GitHub webhook
+app.post('/github-webhook', (req, res) => {
+  console.log("✅ Webhook reçu:", req.body);
+  res.status(200).send('OK');
+});
+
+
 // ----------------------
 // Lancer le serveur
 // ----------------------
