@@ -45,11 +45,11 @@ pipeline {
             }
         }
 
-        stage('Deploy avec k8s') {
+        stage('Deploy  k8s test ') {
             steps {
                 script {
                     try {
-                        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://127.0.0.1:57620']) {
+                        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://127.0.0.1:52791']) {
                             bat 'kubectl apply -f db-secret.yaml --validate=false'
                             bat 'kubectl apply -f k8s/deployment.yaml --validate=false'
                             bat 'kubectl apply -f k8s/service.yaml --validate=false'
@@ -66,10 +66,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Déploiement terminé avec succès sur Minikube."
+            echo "Déploiement terminé avec succès sur Minikube."
         }
         failure {
-            echo "❌ La pipeline a échoué. Vérifiez les logs pour plus de détails."
+            echo "La pipeline a échoué. Vérifiez les logs pour plus de détails."
         }
     }
 }
